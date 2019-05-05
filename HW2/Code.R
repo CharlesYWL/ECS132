@@ -62,3 +62,19 @@ gettosslist <- function(num){
 mean(gettosslist(10000))
 
 ###P3
+library(gtools)
+fir <- function(z){z[1]}
+permn <- function(x,m,FUN){
+  ls <- permutations(n = length(x), r = m, x)
+  rs <- c()
+  count <- length(ls)/m
+  for (i in 1:count) {
+    rs <- c(rs,FUN(ls[i,]))
+  }
+#  print(ls)
+  return(rs)
+}
+permn(7:10,2,fir)
+
+
+
