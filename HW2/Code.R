@@ -30,14 +30,45 @@ getL2list <- function(num){
   }
   return(list)
 }
-mean(getL2list(10000))
+var(getL2list(10000))
+
+getL2L1 <-function(){
+  L1 <- sample(0:2,1,prob = c(.5,.4,.1))
+  NumofPeople <- L1
+  initL1 <- L1
+  i <- 0
+  while (i<NumofPeople) {
+    if(runif(1) < .2){ #quit one people
+      L1 <- L1-1
+    }
+    i <- i+1
+  }
+  return(L1+sample(0:2,1,prob=c(.5,.4,.1))-initL1)
+}
+getL2L1list <- function(num){
+  list <- c()
+  i <- 0
+  while (i < num) {
+    list <- c(list ,getL2L1())
+    i <- i+1
+  }
+  return(list)
+}
+var(getL2L1list(10000))
+
+sim1 <- function(nreps){
+  ls1 <- sample(0:2,nreps,prob = c(.5,.4,.1),replace = TRUE)
+  cat("Var(L1) = ", var(ls1),'\n')
+  cat("Var(L2) = ", var(getL2list(nreps)),'\n')
+  cat("Var(L2-L1) = ",var(getL2L1list(nreps)),'\n') 
+}
 
 ####2
-toss <- function(){
+toss <- function(r,s){
   headaccu <- 0
   round <- 0
   testls <- c()
-  while (headaccu < 3 & round < 6) {
+  while (headaccu < r & round < s) {
     if(runif(1) <.5){ #get HEAD
       headaccu <- headaccu+1
       testls <- c('H',testls)
@@ -50,31 +81,59 @@ toss <- function(){
   #print(testls)
   return(round)
 }
-gettosslist <- function(num){
+gettosslist <- function(r,s,num){
   list <- c()
   i <- 0
   while (i < num) {
-    list <- c(list ,toss())
+    list <- c(list ,toss(r,s))
     i <- i+1
   }
   return(list)
 }
-mean(gettosslist(10000))
+sim2 <- function(r,s,nreps) {
+  return(mean(gettosslist(r,s,nreps)))
+}
 
-###P3
+
+###P3.1
 library(gtools)
-fir <- function(z){z[1]}
+origin <- function(list){return(list)}
 permn <- function(x,m,FUN){
   ls <- permutations(n = length(x), r = m, x)
-  rs <- c()
+  rs <- NA
   count <- length(ls)/m
   for (i in 1:count) {
-    rs <- c(rs,FUN(ls[i,]))
+    rs[i] <- FUN(ls[i])
   }
-#  print(ls)
   return(rs)
 }
-permn(7:10,2,fir)
+perm = function(n, x) {
+  factorial(n) / factorial(n-x)
+}
+### Below are for P3.2
+#fun <- function(list){ 
+#  sum <- numeric(1)
+#  sum <- 0
+#  i <- 1
+#  while (i < 8) {
+#    sum <- sum + abs(list[i+1]-list[i])
+#    i <- i+1
+#  }
+#  return(sum)
+#}
 
-
-
+###P5
+library(ggplot2)
+drawplot <-function(){
+  num <- c(1:10)
+  possibility <- NA
+  sum <- 0
+  for (i in 1:10) {
+    possibility[i] <- dbinom(i,10,.97)
+  }
+  df <- data.frame(num,possibility)
+  df$possibility <- as.factor(df$possibility)
+  head(df)
+  ggplot(df, aes(x=num, y=possibility)) + geom_point()
+}
+#drawplot()
